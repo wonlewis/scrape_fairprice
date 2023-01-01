@@ -1,7 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 from datetime import datetime, date
-from utils import get_past_day
 import time
 import os
 import subprocess
@@ -40,7 +39,7 @@ def asyncio_schedule():
 
     def remove_old_log():
         # Delete logs older than 21 days
-        date_delete = get_past_day('day', 21)
+        date_delete = datetime.datetime.now() - datetime.timedelta(21)
         log_delete = f'GetFairprice/logs/{date_delete}.log'
         try:
             os.remove(log_delete)
