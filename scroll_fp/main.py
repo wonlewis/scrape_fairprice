@@ -10,7 +10,7 @@ import logging
 def set_logging():
     # Get current time and convert to date
     today = datetime.now().strftime("%Y-%m-%d")
-    log_file = f'GetFairprice/logs/{today}.log'
+    log_file = f'./GetFairprice/logs/{today}.log'
 
     # Create an empty log file if not exist
     if not os.path.exists(log_file):
