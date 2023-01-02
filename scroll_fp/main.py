@@ -50,8 +50,8 @@ def asyncio_schedule():
             logging.info(f"deleted {log_delete}!")
 
     scheduler = AsyncIOScheduler()
-    # Add task to crawl everyday at 8am
-    scheduler.add_job(func=run_spider, trigger='cron', day_of_the_week='mon-sun', hour='8')
+    # Add task to crawl per hour between 7a.m to 7p.m
+    scheduler.add_job(func=run_spider, trigger='cron', hour='0-23')
     # Add task to clean old log, keep logs for last 14 days only, run at 11:30p.m
     scheduler.add_job(func=remove_old_log, trigger='cron',
                       hour='23', minute='30')
