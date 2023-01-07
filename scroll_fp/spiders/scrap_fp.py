@@ -10,12 +10,12 @@ bakery = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=bake
 meat = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=meat-seafood&experiments=promolabel-a%2CsearchVariant-B%2CtimerVariant-Z%2CinlineBanner-A%2CsubstitutionBSVariant-A%2Cgv-A%2Cshelflife-B%2CcSwitch-A%2Cds-A%2Csimpleprice-b%2Cpromocopy-a%2Calgolia-b%2Cls_comsl-B%2Csearchrec-off%2Cls_deltime-A%2Cls_sscart-A&includeTagDetails=true&orderType=DELIVERY&page={}&pageType=category&slug=meat-seafood&sorting=POPULARITY&storeId=17&url=meat-seafood'
 staples = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=rice-noodles-cooking-ingredients&experiments=promolabel-a%2CsearchVariant-B%2CtimerVariant-Z%2CinlineBanner-A%2CsubstitutionBSVariant-A%2Cgv-A%2Cshelflife-B%2CcSwitch-A%2Cds-A%2Csimpleprice-b%2Cpromocopy-a%2Calgolia-b%2Cls_comsl-B%2Csearchrec-off%2Cls_deltime-A%2Cls_sscart-A&includeTagDetails=true&orderType=DELIVERY&page={}&pageType=category&slug=rice-noodles-cooking-ingredients&sorting=POPULARITY&storeId=17&url=rice-noodles-cooking-ingredients'
 household = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=household&experiments=promolabel-a%2CsearchVariant-B%2CtimerVariant-Z%2CinlineBanner-A%2CsubstitutionBSVariant-A%2Cgv-A%2Cshelflife-B%2CcSwitch-A%2Cds-A%2Csimpleprice-b%2Cpromocopy-a%2Calgolia-b%2Cls_comsl-B%2Csearchrec-off%2Cls_deltime-A%2Cls_sscart-A&includeTagDetails=true&orderType=DELIVERY&page=2&pageType=category&slug=household&sorting=POPULARITY&storeId=17&url=household'
-my_list = [staples, household, drinks, vegetables, dairy, bakery, meat]
-my_list_name = ['staples', 'household', 'drinks', 'vegetables', 'dairy', 'bakery', 'meat']
+my_list = [drinks, vegetables, dairy, bakery, meat, staples, household]
+my_list_name = ['drinks', 'vegetables', 'dairy', 'bakery', 'meat' ,'staples','household']
 
 class QuotesSpider(scrapy.Spider):
     name = "scrap_fp"
-    url = drinks.format(1)
+    url = my_list[0].format(1)
 
     def start_requests(self):
         utc_time = datetime.utcnow()
@@ -52,11 +52,23 @@ class QuotesSpider(scrapy.Spider):
                 offer_price = 0
                 offer_description = 'None'
             print(dir())
-            prod_SAP_name = product["metaData"]["SAP Product Name"].replace("'", "''")
-            prod_name = product["name"].replace("'", "''")
-            prod_slug = product["slug"].replace("'", "''")
-            prod_brand = product["brand"]["name"].replace("'", "''")
-            prod_display_unit = product["metaData"]["DisplayUnit"].replace("'", "''")
+            prod_SAP_name = product["metaData"].get('SAP Product Name', '') 
+            prod_SAP_name = prod_SAP_name.replace("'", "''")
+
+            prod_name = product.get('name', '')
+            prod_name = prod_name.replace("'", "''")
+
+            prod_slug = product.get('slug', '')
+            prod_slug = prod_slug.replace("'", "''")
+            
+            prod_brand = product["brand"].get('name', '')
+            prod_brand = prod_brand.replace("'", "''")
+
+            prod_id= product["brand"].get('id', '')
+
+            prod_display_unit = product["metaData"].get('DisplayUnit', '')
+            prod_display_unit = prod_display_unit.replace("'", "''")
+ 
             if product["storeSpecificData"][0]["updatedAt"] == 'None' or product["storeSpecificData"][0]["updatedAt"] is None:
                 prod_updated_at = '1970-01-01 00:00:00.000000'
             else:
@@ -73,13 +85,13 @@ class QuotesSpider(scrapy.Spider):
                 'updated_at': prod_updated_at,
                 'offer_price': offer_price,
                 'offer_description': offer_description,
-                'id': product["brand"]["id"],
+                'id': prod_id,
                 'display_unit': prod_display_unit,
                 "SAP_product_name": prod_SAP_name
             }
         curr_page = my_data["data"]["pagination"]["page"]
         total_page = my_data["data"]["pagination"]["total_pages"]
-        if curr_page < total_page -1 :
+        if curr_page < total_page:
             next_page_url = my_list[this_element].format(curr_page+1)
             yield scrapy.Request(
                 url=next_page_url,
