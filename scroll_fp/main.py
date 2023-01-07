@@ -10,7 +10,7 @@ import logging
 def set_logging():
     # Get current time and convert to date
     today = datetime.now().strftime("%Y-%m-%d")
-    log_file = f'./GetFairprice/logs/{today}.log'
+    log_file = f'./scroll_fp/GetFairprice/logs/{today}.log'
 
     # Create an empty log file if not exist
     if not os.path.exists(log_file):
@@ -50,8 +50,9 @@ def asyncio_schedule():
             logging.info(f"deleted {log_delete}!")
 
     scheduler = AsyncIOScheduler()
-    # Add task to crawl per hour between 7a.m to 7p.m
-    scheduler.add_job(func=run_spider, trigger='cron', hour='0-23')
+    # Add task to crawl every 5 minutes
+    scheduler.add_job(func=run_spider, trigger='cron', year='*', month='*',
+                      day='*', week='*', day_of_week='*', hour='*', minute='*/1', second=0)
     # Add task to clean old log, keep logs for last 14 days only, run at 11:30p.m
     scheduler.add_job(func=remove_old_log, trigger='cron',
                       hour='23', minute='30')

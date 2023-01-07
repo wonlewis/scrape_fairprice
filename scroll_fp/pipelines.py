@@ -28,22 +28,15 @@ class PostgresPipeline(object):
        self.client.close()
 
     def process_item(self, item, spider):
+
         # Create table to insert
         self.curr.execute("""
             CREATE TABLE IF NOT EXISTS {schema}.{insert_table} (
                 utc_time timestamp,
                 crawl_ts integer,
-                product_type text,
                 barcode text,
-                brand text,
-                id integer,
-                name text,
-                slug text,
-                mrp decimal,
                 updated_at timestamp,
-                offer_price decimal,
-                offer_description text,
-                display_unit text,
+                mrp decimal,
                 SAP_product_name text,
                 PRIMARY KEY (barcode, updated_at)
             )
@@ -53,33 +46,18 @@ class PostgresPipeline(object):
         self.curr.execute("""
                         INSERT INTO {schema}.{insert_table} VALUES (
                                                                     '{utc_time}', 
-                                                                    '{product_type}',
+                                                                    '{crawl_ts}',
                                                                     '{barcode}', 
-                                                                    '{brand}', 
-                                                                    '{id}', 
-                                                                    '{name}', 
-                                                                    '{slug}', 
-                                                                    '{mrp}', 
                                                                     '{updated_at}', 
-                                                                    '{offer_price}', 
-                                                                    '{offer_description}',
-                                                                    '{display_unit}',
+                                                                    '{mrp}', 
                                                                     '{SAP_product_name}'
                                                                 )
                         ON CONFLICT (barcode, updated_at)
                         DO UPDATE
                         SET 
                             utc_time = excluded.utc_time,
-                            crawl_ts = excluded.crawl_ts
-                            product_type = excluded.product_type
-                            brand = excluded.brand
-                            id = excluded.id
-                            name = excluded.name
-                            slug = excluded.slug
-                            mrp = excluded.mrp
-                            offer_price = excluded.offer_price
-                            offer_description = excluded.offer_description
-                            display_unit = excluded.display_unit
+                            crawl_ts = excluded.crawl_ts,
+                            mrp = excluded.mrp,
                             SAP_product_name = excluded.SAP_product_name
                         """.format(schema=self.schema, insert_table=self.insert_table, **item)
                           )
