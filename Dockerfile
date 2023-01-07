@@ -18,7 +18,8 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install \
     scrapy \
     apscheduler \
-    pg8000
+    pg8000 \
+    python-dotenv
 
 # Set the working directory to /usr/src/app.
 WORKDIR /usr/src/app
