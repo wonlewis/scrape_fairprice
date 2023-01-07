@@ -2,6 +2,7 @@ import scrapy
 from datetime import datetime
 from decimal import *
 import time
+import random
 
 drinks = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=drinks&experiments=promolabel-a%2CsearchVariant-B%2CtimerVariant-Z%2CinlineBanner-A%2CsubstitutionBSVariant-A%2Cgv-A%2Cshelflife-B%2CcSwitch-A%2Cds-A%2Csimpleprice-b%2Cpromocopy-a%2Calgolia-b%2Cls_comsl-B%2Csearchrec-off%2Cls_deltime-A%2Cls_sscart-A&includeTagDetails=true&orderType=DELIVERY&page={}&pageType=category&slug=drinks&sorting=POPULARITY&storeId=165&url=drinks'
 vegetables = 'https://website-api.omni.fairprice.com.sg/api/product/v2?category=fruits-vegetables&experiments=promolabel-a%2CsearchVariant-B%2CtimerVariant-Z%2CinlineBanner-A%2CsubstitutionBSVariant-A%2Cgv-A%2Cshelflife-B%2CcSwitch-A%2Cds-A%2Csimpleprice-b%2Cpromocopy-a%2Calgolia-b%2Cls_comsl-B%2Csearchrec-off%2Cls_deltime-A%2Cls_sscart-A&includeTagDetails=true&orderType=DELIVERY&page={}&pageType=category&slug=fruits-vegetables&sorting=POPULARITY&storeId=17&url=fruits-vegetables'
@@ -68,6 +69,11 @@ class QuotesSpider(scrapy.Spider):
 
             prod_display_unit = product["metaData"].get('DisplayUnit', '')
             prod_display_unit = prod_display_unit.replace("'", "''")
+
+            if len(product["barcodes"])>0:
+                prod_barcode = product["barcodes"][0]
+            else:
+                prod_barcode = str(random.randint(0, 999999999999999999999999999999999999))
  
             if product["storeSpecificData"][0]["updatedAt"] == 'None' or product["storeSpecificData"][0]["updatedAt"] is None:
                 prod_updated_at = '1970-01-01 00:00:00.000000'
@@ -77,7 +83,7 @@ class QuotesSpider(scrapy.Spider):
                 'utc_time': utc_time,
                 'crawl_ts': int(crawl_ts),
                 'product_type': my_list_name[this_element],
-                'barcode': product["barcodes"][0],
+                'barcode': prod_barcode,
                 'brand': prod_brand,
                 'name': prod_name,
                 'slug': prod_slug,
