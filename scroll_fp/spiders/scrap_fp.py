@@ -55,6 +55,9 @@ class QuotesSpider(scrapy.Spider):
             print(dir())
             prod_SAP_name = product["metaData"].get('SAP Product Name', '') 
             prod_SAP_name = prod_SAP_name.replace("'", "''")
+            if prod_SAP_name == '':
+                prod_SAP_name = str(random.randint(
+                    0, 99999999999999999999999999999999999999999))
 
             prod_name = product.get('name', '')
             prod_name = prod_name.replace("'", "''")
@@ -69,12 +72,7 @@ class QuotesSpider(scrapy.Spider):
 
             prod_display_unit = product["metaData"].get('DisplayUnit', '')
             prod_display_unit = prod_display_unit.replace("'", "''")
-
-            if len(product["barcodes"])>0:
-                prod_barcode = product["barcodes"][0]
-            else:
-                prod_barcode = str(random.randint(0, 999999999999999999999999999999999999))
- 
+            
             if product["storeSpecificData"][0]["updatedAt"] == 'None' or product["storeSpecificData"][0]["updatedAt"] is None:
                 prod_updated_at = '1970-01-01 00:00:00.000000'
             else:
@@ -83,7 +81,6 @@ class QuotesSpider(scrapy.Spider):
                 'utc_time': utc_time,
                 'crawl_ts': int(crawl_ts),
                 'product_type': my_list_name[this_element],
-                'barcode': prod_barcode,
                 'brand': prod_brand,
                 'name': prod_name,
                 'slug': prod_slug,

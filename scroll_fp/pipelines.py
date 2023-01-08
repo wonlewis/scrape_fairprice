@@ -35,7 +35,6 @@ class PostgresPipeline(object):
             CREATE TABLE IF NOT EXISTS {schema}.{insert_table} (
                 utc_time timestamp,
                 crawl_ts integer,
-                barcode text,
                 updated_at timestamp,
                 mrp decimal,
                 SAP_product_name text,
@@ -47,7 +46,7 @@ class PostgresPipeline(object):
                 offer_description text,
                 display_unit text,
                 product_type text,
-                PRIMARY KEY (barcode, updated_at)
+                PRIMARY KEY (SAP_product_name, updated_at)
             )
         """.format(schema=self.schema, insert_table=self.insert_table)
         )
@@ -56,7 +55,6 @@ class PostgresPipeline(object):
                         INSERT INTO {schema}.{insert_table} VALUES (
                                                                     '{utc_time}', 
                                                                     '{crawl_ts}',
-                                                                    '{barcode}', 
                                                                     '{updated_at}', 
                                                                     '{mrp}', 
                                                                     '{SAP_product_name}',
@@ -69,13 +67,12 @@ class PostgresPipeline(object):
                                                                     '{display_unit}',
                                                                     '{product_type}'
                                                                 )
-                        ON CONFLICT (barcode, updated_at)
+                        ON CONFLICT (SAP_product_name, updated_at)
                         DO UPDATE
                         SET 
                             utc_time = excluded.utc_time,
                             crawl_ts = excluded.crawl_ts,
                             mrp = excluded.mrp,
-                            SAP_product_name = excluded.SAP_product_name,
                             brand = excluded.brand,
                             id = excluded.id,
                             name = excluded.name,
