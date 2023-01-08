@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This is a docker container to automatically scrape prices and items from online supermarkets. The scraping engine is powered by Scrapy, and uses Apscheduler for scheduling. The container is designed to be hosted on an instane such as AWS EC2, and the scraped data can be stored on a dedicated database such as AWS RDS postgresql.
+This is a docker container to automatically download prices and items from online supermarkets. The scraping engine is powered by Scrapy, and uses Apscheduler for scheduling. The container is designed to be hosted on an instance such as AWS EC2, and the scraped data can be stored on a dedicated database such as AWS RDS postgresql.
+
+Credits to this [article](https://medium.com/@lminhkhoa/how-to-build-a-fully-automated-web-scraping-pipeline-for-dashboard-742b6dce9f0f) by Khoa Le on Medium for reference.
 
 ## How to use
 
